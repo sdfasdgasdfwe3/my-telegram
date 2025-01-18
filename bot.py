@@ -3,6 +3,7 @@ import os
 import subprocess
 import sys
 import asyncio
+from datetime import datetime
 from telethon import TelegramClient, events
 import time
 
@@ -57,6 +58,7 @@ if os.path.exists(CONFIG_FILE):
         print(f"Ошибка в файле конфигурации: {e}")
         sys.exit(1)  # Останавливаем выполнение, если файл поврежден
 else:
+    # Запрашиваем у пользователя данные (если файла конфигурации нет)
     API_ID = int(input("Введите ваш API ID: "))
     API_HASH = input("Введите ваш API Hash: ")
     PHONE_NUMBER = input("Введите ваш номер телефона (в формате +375XXXXXXXXX, +7XXXXXXXXXX): ")
@@ -112,8 +114,6 @@ start_time = time.time()
 @client.on(events.NewMessage(outgoing=True))
 async def handler(event):
     global current_animation, awaiting_animation_choice, start_time
-
-    print(f"Получено сообщение: {event.raw_text}")  # Логирование входящих сообщений
 
     # Проверка на таймаут при ожидании выбора анимации
     timeout = 30  # Таймаут в секундах
@@ -175,12 +175,9 @@ async def handler(event):
 # Главная асинхронная функция
 async def main():
     print("Запуск main()")
-    try:
-        await client.start(phone=PHONE_NUMBER)
-        print("Скрипт успешно запущен! Отправьте команду '001' для выбора анимации.")
-        await client.run_until_disconnected()
-    except Exception as e:
-        print(f"Ошибка при подключении к Telegram: {e}")
+    await client.start(phone=PHONE_NUMBER)
+    print("Скрипт успешно запущен! Отправьте команду '001' для выбора анимации.")
+    await client.run_until_disconnected()
 
 if __name__ == "__main__":
     asyncio.run(main())
