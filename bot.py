@@ -3,7 +3,6 @@ import os
 import subprocess
 import sys
 import asyncio
-from datetime import datetime
 from telethon import TelegramClient, events
 import time
 
@@ -54,16 +53,32 @@ if os.path.exists(CONFIG_FILE):
         API_ID = config['api_id']
         API_HASH = config['api_hash']
         PHONE_NUMBER = config['phone_number']
+        print(f"Данные загружены из конфигурации: API_ID={API_ID}, API_HASH={API_HASH}, PHONE_NUMBER={PHONE_NUMBER}")
     except (json.JSONDecodeError, KeyError) as e:
         print(f"Ошибка в файле конфигурации: {e}")
         sys.exit(1)  # Останавливаем выполнение, если файл поврежден
 else:
     # Запрашиваем у пользователя данные (если файла конфигурации нет)
-    API_ID = int(input("Введите ваш API ID: "))
-    API_HASH = input("Введите ваш API Hash: ")
-    PHONE_NUMBER = input("Введите ваш номер телефона (в формате +375XXXXXXXXX, +7XXXXXXXXXX): ")
+    print("Файл конфигурации не найден, необходимо ввести данные вручную.")
+    
+    while True:
+        try:
+            API_ID = int(input("Введите ваш API ID: "))
+            break
+        except ValueError:
+            print("API ID должен быть числом. Попробуйте снова.")
+
+    API_HASH = input("Введите ваш API Hash: ").strip()
+    while True:
+        PHONE_NUMBER = input("Введите ваш номер телефона (в формате +375XXXXXXXXX, +7XXXXXXXXXX): ").strip()
+        if PHONE_NUMBER.startswith('+') and len(PHONE_NUMBER) > 10:
+            break
+        else:
+            print("Неверный формат номера телефона. Попробуйте снова.")
+
     with open(CONFIG_FILE, 'w') as f:
         json.dump({'api_id': API_ID, 'api_hash': API_HASH, 'phone_number': PHONE_NUMBER}, f)
+    print(f"Данные сохранены в конфигурации: API_ID={API_ID}, API_HASH={API_HASH}, PHONE_NUMBER={PHONE_NUMBER}")
 
 # Инициализация клиента
 client = TelegramClient('sessions', API_ID, API_HASH)
