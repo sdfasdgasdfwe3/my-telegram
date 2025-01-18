@@ -26,22 +26,6 @@ def check_install(package):
 for package in required_packages:
     check_install(package)
 
-# Функция для автоматического обновления из GitHub
-def update_from_git():
-    try:
-        print("Проверка наличия обновлений...")
-        # Если репозиторий является git-репозиторием, выполняем pull
-        result = subprocess.run(["git", "pull"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        if result.returncode == 0:
-            print("Обновления успешно загружены!")
-        else:
-            print(f"Ошибка при загрузке обновлений: {result.stderr.decode('utf-8')}")
-    except Exception as e:
-        print(f"Не удалось выполнить обновление: {e}")
-
-# Выполнение обновлений перед запуском
-update_from_git()
-
 # Файл для хранения данных
 CONFIG_FILE = 'config.json'
 
@@ -50,23 +34,22 @@ if os.path.exists(CONFIG_FILE):
     try:
         with open(CONFIG_FILE, 'r') as f:
             config = json.load(f)
-        API_ID = config['api_id']
-        API_HASH = config['api_hash']
+        API_ID = config['api_id']  # API_ID должно быть числом
+        API_HASH = config['api_hash']  # API_HASH строкой
         PHONE_NUMBER = config['phone_number']
         print(f"Данные загружены из конфигурации: API_ID={API_ID}, API_HASH={API_HASH}, PHONE_NUMBER={PHONE_NUMBER}")
     except (json.JSONDecodeError, KeyError) as e:
         print(f"Ошибка в файле конфигурации: {e}")
         sys.exit(1)  # Останавливаем выполнение, если файл поврежден
 else:
-    # Запрашиваем у пользователя данные (если файла конфигурации нет)
     print("Файл конфигурации не найден, необходимо ввести данные вручную.")
     
     while True:
         try:
-            API_ID = int(input("Введите ваш API ID: "))
+            API_ID = int(input("Введите ваш API ID (число): "))  # API_ID должно быть числом
             break
         except ValueError:
-            print("API ID должен быть числом. Попробуйте снова.")
+            print("API ID должно быть числом. Попробуйте снова.")
 
     API_HASH = input("Введите ваш API Hash: ").strip()
     while True:
@@ -76,6 +59,7 @@ else:
         else:
             print("Неверный формат номера телефона. Попробуйте снова.")
 
+    # Сохраняем данные в файл
     with open(CONFIG_FILE, 'w') as f:
         json.dump({'api_id': API_ID, 'api_hash': API_HASH, 'phone_number': PHONE_NUMBER}, f)
     print(f"Данные сохранены в конфигурации: API_ID={API_ID}, API_HASH={API_HASH}, PHONE_NUMBER={PHONE_NUMBER}")
@@ -83,7 +67,7 @@ else:
 # Инициализация клиента
 client = TelegramClient('sessions', API_ID, API_HASH)
 
-# Устанавливаем стандартную скорость печатания 0.4
+# Настройка скорости печатания (фиксированное значение)
 typing_speed = 0.4
 
 # Доступные анимации (оставлены только анимации 1 и 2)
