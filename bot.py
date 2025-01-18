@@ -1,4 +1,4 @@
-import json
+import json 
 import os
 import subprocess
 import sys
@@ -83,16 +83,8 @@ else:
 # Инициализация клиента
 client = TelegramClient('sessions', API_ID, API_HASH)
 
-# Настройка скорости печатания
-while True:
-    try:
-        typing_speed = float(input("Введите скорость печатания (от 0.1 до 0.5): "))
-        if 0.1 <= typing_speed <= 0.5:
-            break
-        else:
-            print("Введите значение в диапазоне от 0.1 до 0.5.")
-    except ValueError:
-        print("Пожалуйста, введите числовое значение.")
+# Установим фиксированную скорость печатания
+typing_speed = 0.4  # Скорость анимации установлена на 0.4
 
 # Доступные анимации (оставлены только анимации 1 и 2)
 animations = {
