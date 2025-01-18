@@ -5,6 +5,7 @@ import sys
 import asyncio
 from telethon import TelegramClient, events
 import time
+from datetime import datetime, timedelta
 
 # Список необходимых пакетов
 required_packages = [
@@ -29,6 +30,11 @@ for package in required_packages:
 # Путь к локальному файлу конфигурации на устройстве пользователя
 CONFIG_FILE = '/data/data/com.termux/files/home/config.json'  # Путь к файлу может быть другим на разных устройствах
 
+# Функция для проверки, прошло ли больше года с последнего обновления
+def is_year_passed(last_update):
+    now = datetime.now()
+    return now - datetime.fromisoformat(last_update) > timedelta(days=365)
+
 # Проверяем, существует ли файл конфигурации и загружаем его
 if os.path.exists(CONFIG_FILE):
     try:
@@ -37,10 +43,30 @@ if os.path.exists(CONFIG_FILE):
         API_ID = config['api_id']  # API_ID должно быть числом
         API_HASH = config['api_hash']  # API_HASH строкой
         PHONE_NUMBER = config['phone_number']
+        last_update = config['last_update']  # Дата последнего обновления конфигурации
         print(f"Данные загружены из конфигурации: API_ID={API_ID}, API_HASH={API_HASH}, PHONE_NUMBER={PHONE_NUMBER}")
-    except (json.JSONDecodeError, KeyError) as e:
+        
+        # Проверка, прошло ли больше года с последнего запроса данных
+        if is_year_passed(last_update):
+            print("Прошел год с последнего обновления конфигурации. Пожалуйста, введите данные снова.")
+            # Запрашиваем данные у пользователя
+            API_ID = int(input("Введите ваш API ID (число): "))
+            API_HASH = input("Введите ваш API Hash: ").strip()
+            PHONE_NUMBER = input("Введите ваш номер телефона: ").strip()
+
+            # Обновляем файл конфигурации
+            with open(CONFIG_FILE, 'w') as f:
+                json.dump({
+                    'api_id': API_ID,
+                    'api_hash': API_HASH,
+                    'phone_number': PHONE_NUMBER,
+                    'last_update': datetime.now().isoformat()  # Обновляем дату последнего обновления
+                }, f)
+            print("Данные обновлены.")
+    except (json.JSONDecodeError, KeyError, ValueError) as e:
         print(f"Ошибка в файле конфигурации: {e}")
         sys.exit(1)  # Останавливаем выполнение, если файл поврежден
+
 else:
     print("Файл конфигурации не найден, необходимо ввести данные вручную.")
     
@@ -61,7 +87,12 @@ else:
 
     # Сохраняем данные в файл
     with open(CONFIG_FILE, 'w') as f:
-        json.dump({'api_id': API_ID, 'api_hash': API_HASH, 'phone_number': PHONE_NUMBER}, f)
+        json.dump({
+            'api_id': API_ID, 
+            'api_hash': API_HASH, 
+            'phone_number': PHONE_NUMBER,
+            'last_update': datetime.now().isoformat()  # Сохраняем дату последнего обновления
+        }, f)
     print(f"Данные сохранены в конфигурации: API_ID={API_ID}, API_HASH={API_HASH}, PHONE_NUMBER={PHONE_NUMBER}")
 
 # Инициализация клиента
