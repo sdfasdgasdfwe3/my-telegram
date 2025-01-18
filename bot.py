@@ -26,8 +26,8 @@ def check_install(package):
 for package in required_packages:
     check_install(package)
 
-# Файл для хранения данных
-CONFIG_FILE = 'config.json'
+# Путь к локальному файлу конфигурации на устройстве пользователя
+CONFIG_FILE = '/data/data/com.termux/files/home/config.json'  # Путь к файлу может быть другим на разных устройствах
 
 # Проверяем, существует ли файл конфигурации и загружаем его
 if os.path.exists(CONFIG_FILE):
