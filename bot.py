@@ -1,4 +1,4 @@
-import json 
+import json
 import os
 import subprocess
 import sys
@@ -83,8 +83,8 @@ else:
 # Инициализация клиента
 client = TelegramClient('sessions', API_ID, API_HASH)
 
-# Установим фиксированную скорость печатания
-typing_speed = 0.4  # Скорость анимации установлена на 0.4
+# Устанавливаем стандартную скорость печатания 0.4
+typing_speed = 0.4
 
 # Доступные анимации (оставлены только анимации 1 и 2)
 animations = {
