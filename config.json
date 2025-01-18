@@ -1,5 +1,5 @@
 {
-    "api_id": "your_api_id",
+    "api_id": 123456,
     "api_hash": "your_api_hash",
-    "phone_number": "your_phone_number"
+    "phone_number": "+1234567890"
 }
