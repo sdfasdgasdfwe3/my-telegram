@@ -3,7 +3,6 @@ import os
 import subprocess
 import sys
 import asyncio
-from datetime import datetime
 from telethon import TelegramClient, events
 import time
 
@@ -114,6 +113,8 @@ start_time = time.time()
 async def handler(event):
     global current_animation, awaiting_animation_choice, start_time
 
+    print(f"Получено сообщение: {event.raw_text}")  # Логирование входящих сообщений
+
     # Проверка на таймаут при ожидании выбора анимации
     timeout = 30  # Таймаут в секундах
     if awaiting_animation_choice and time.time() - start_time > timeout:
@@ -174,9 +175,12 @@ async def handler(event):
 # Главная асинхронная функция
 async def main():
     print("Запуск main()")
-    await client.start(phone=PHONE_NUMBER)
-    print("Скрипт успешно запущен! Отправьте команду '001' для выбора анимации.")
-    await client.run_until_disconnected()
+    try:
+        await client.start(phone=PHONE_NUMBER)
+        print("Скрипт успешно запущен! Отправьте команду '001' для выбора анимации.")
+        await client.run_until_disconnected()
+    except Exception as e:
+        print(f"Ошибка при подключении к Telegram: {e}")
 
 if __name__ == "__main__":
     asyncio.run(main())
